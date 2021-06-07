@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>TEST</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./assets/index.css" rel="stylesheet">
+    <style>
+        .head-box {
+            height: 10%;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .contents-box {
+            height: 90%;
+            display: flex;
+            list-style: none;
+            background-color: blue;
+        }
+        .contents-box li {
+            flex-basis: 50%;
+            height: 100%;
+            text-align: center;
+        }
+        .contents-box li:first-child {
+            background-color: orange;
+        }
+        .contents-box li:last-child {
+            background-color: green;
+        }
+        @media screen and (max-width: 500px) {
+            .contents-box {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-box">
+        <header class="head-box">
+            <!-- 이상형 토너먼트 -->
+            <h2>ㅇㅅㅎ ㅌㄴㅁㅌ <span id="roundNumber"></span></h2>
+            <button class="">돌아가기</button>
+        </header>
+        <ul class="contents-box">
+            <li>
+                <img id="imageUrl1" src="" alt="">
+                <p id="people1">1</p>
+            </li>
+            <li>
+                <img id="imageUrl2" src="" alt="">
+                <p id="people2">2</p>
+            </li>
+        </ul>
+    </div>
+    <script src="./assets/People.js"></script>
+    <script>
+        const imageUrl1 = document.getElementById('imageUrl1');
+        const imageUrl2 = document.getElementById('imageUrl2');
+        const people1 = document.getElementById('people1');
+        const people2 = document.getElementById('people2');
+
+        const roundN = Number(window.localStorage.getItem('value'));
+        document.getElementById('roundNumber').innerHTML = roundN+'강';
+
+        const peopleData = DATA;
+        let randomNum = () => {
+            return Math.floor(Math.random()*DATA.length);
+        }
+
+
+        // let list = [];
+        // for(let i = 0; i < roundN; i++){
+        //     let ranN = randomNum();
+        //     list.push(peopleData[ranN].name);
+        //     peopleData.splice(ranN, 1);
+        // }
+        // let randomNum = () => {
+        //     return Math.floor(Math.random()*DATA.length);
+        // }
+        const arr = new Array(5).fill(null);
+        let list = arr.reduce((tot, el) => {
+            let ranN = Math.floor(Math.random()*DATA.length);
+            tot.push(peopleData[ranN].name);
+            peopleData.splice(ranN, 1);
+            return tot;
+        }, []);
+        console.log('list: ', list);
+
+        const result = list.filter((el, idx) => {
+            return idx !== list.indexOf(el);
+        })              
+        console.log('결과: ', result);
+    </script>
+</body>
+</html>
