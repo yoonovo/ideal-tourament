@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>종료</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./assets/index.css" rel="stylesheet">
+    <style>
+    </style>
+</head>
+<body>
+    <div class="main-box">
+        <dl class="title-box">
+            <dt>토너먼트가 종료되었습니다.</dt>
+            <dd>최종 우승자</dd>
+            <dd>HISTORY
+                <ul id="historyBox">
+                </ul>
+            </dd>
+            <dd>
+                <button onClick="location.replace('./index.html')">HOME</button>
+            </dd>
+        </dl>
+        <footer>https://github.com/yoonovo/ideal-tourament</footer>
+    </div>
+    <script>    
+        const dataHistoryTree = window.localStorage.getItem('history') ? JSON.parse(window.localStorage.getItem('history')) : {}; // 히스토리
+        console.log('dataHistoryTree', dataHistoryTree)
+        const keys = Object.keys(dataHistoryTree);
+        const historyBox = document.getElementById('historyBox');
+        keys.forEach(el => {
+            historyBox.innerHTML += `<li>${dataHistoryTree[el]}</li>`;
+        })
+    </script>
+</body>
+</html>

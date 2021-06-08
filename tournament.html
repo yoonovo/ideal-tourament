@@ -17,22 +17,68 @@
             height: 90%;
             display: flex;
             list-style: none;
-            background-color: blue;
+            /* background-color: blue; */
         }
-        .contents-box li {
+        .contents-box .image-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             flex-basis: 50%;
             height: 100%;
+        }
+        .contents-box .image-box img {
+            width: 100%;
+            height: 90%;
+        }
+        .contents-box .image-box p {
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            display: inline-block;
             text-align: center;
+            font-size: 24px;
+            font-weight: 400;
+            background-color: #000;
+            color: #fff;
         }
-        .contents-box li:first-child {
-            background-color: orange;
-        }
-        .contents-box li:last-child {
-            background-color: green;
+        .contents-box .vs-box {
+            display: none;
         }
         @media screen and (max-width: 500px) {
             .contents-box {
                 flex-direction: column;
+            }
+            .contents-box .image-box img {
+                max-height: 200px;
+                max-width: 300px;
+            }
+            .contents-box .image-box p {
+                width: 300px;
+                height: 30px;
+                line-height: 30px;
+            }
+            .contents-box .vs-box {
+                display: block;
+                position: relative;
+                width: 100%;
+                height: 30px;
+            }
+            .contents-box .vs-box hr {    
+                position: absolute;
+                top: 50%;
+                width: 100%;
+            }
+            .contents-box .vs-box p {           
+                position: absolute;
+                top: 50%;
+                margin-top: -7.5px;
+                left: 50%;
+                margin-left: -20px;
+                font-weight: bold;
+                background-color: #fff;
+                padding: 0 10px;
+                font-size: 20px;
             }
         }
     </style>
@@ -41,17 +87,22 @@
     <div class="main-box">
         <header class="head-box">
             <!-- 이상형 토너먼트 -->
+            <button class="" onclick="onHome()">HOME</button>
             <h2>ㅇㅅㅎ ㅌㄴㅁㅌ <span id="roundNumber"></span></h2>
-            <button class="">돌아가기</button>
+            <button class="" onclick="onBack()">BACK</button>
         </header>
         <ul class="contents-box">
-            <li>
-                <img id="imageUrl1" src="" alt="">
-                <p id="people1">1</p>
+            <li class="image-box" onClick="selectIdealPeople(1)">
+                <img id="imageUrl1" src="./assets/images/sweet.jpg" alt="">
+                <p id="people1"></p>
             </li>
-            <li>
-                <img id="imageUrl2" src="" alt="">
-                <p id="people2">2</p>
+            <li class="vs-box">
+                <hr />
+                <p>VS</p>
+            </li>
+            <li class="image-box" onClick="selectIdealPeople(2)">
+                <img id="imageUrl2" src="./assets/images/sweet.jpg" alt="">
+                <p id="people2"></p>
             </li>
         </ul>
     </div>
@@ -62,37 +113,68 @@
         const people1 = document.getElementById('people1');
         const people2 = document.getElementById('people2');
 
-        const roundN = Number(window.localStorage.getItem('value'));
+        const roundN = Number(window.localStorage.getItem('round'));
         document.getElementById('roundNumber').innerHTML = roundN+'강';
+        let roundChk = roundN/2;
 
-        const peopleData = DATA;
-        let randomNum = () => {
-            return Math.floor(Math.random()*DATA.length);
-        }
-
-
-        // let list = [];
-        // for(let i = 0; i < roundN; i++){
-        //     let ranN = randomNum();
-        //     list.push(peopleData[ranN].name);
-        //     peopleData.splice(ranN, 1);
-        // }
-        // let randomNum = () => {
-        //     return Math.floor(Math.random()*DATA.length);
-        // }
-        const arr = new Array(5).fill(null);
-        let list = arr.reduce((tot, el) => {
-            let ranN = Math.floor(Math.random()*DATA.length);
-            tot.push(peopleData[ranN].name);
+        // localStorage에 있는 이전기록 데이터 가져오기
+        const storage = window.localStorage.getItem('history');
+        const dataHistoryTree = storage ? JSON.parse(storage) : {}; 
+        console.log('storage', storage)
+        console.log('dataHistoryTree', dataHistoryTree)
+        
+        dataHistoryTree[roundN+'강'] = [];
+        console.log('roundN', roundN)
+        const peopleData = dataHistoryTree[(roundN*2)+'강'] || DATA; // 더미 데이터
+        console.log('peopleData', peopleData)
+        
+        // 가져온 데이터 혹은 새로운 데이터로 세팅
+        const arr = new Array(roundN).fill(null);
+        let list = arr.reduce((tot, el) => { // 데이터 랜덤셔플
+            let ranN = Math.floor(Math.random()*peopleData.length); 
+            tot.push(peopleData[ranN]);
             peopleData.splice(ranN, 1);
             return tot;
         }, []);
-        console.log('list: ', list);
+        console.log('결과: ', list);
 
-        const result = list.filter((el, idx) => {
-            return idx !== list.indexOf(el);
-        })              
-        console.log('결과: ', result);
+        selectIdealPeople();
+        
+        // 둘 중 하나를 선택 했을때  
+        function selectIdealPeople(idx){
+            if(idx){ // 클릭 이벤트로 호출 했을때 히스토리에 추가
+                const txt = document.getElementById('people'+idx).innerText;
+                dataHistoryTree[roundN+'강'].push(txt);
+            }
+
+            // 라운드가 종료 되었을때
+            const num = (list.length/2) - roundChk;
+            if(num >= list.length){
+                alert('라운드 종료');
+                window.localStorage.setItem('history', JSON.stringify(dataHistoryTree));
+                if(roundN/2 === 1){ // 최종라운드일 경우 finish.html로 이동
+                    location.replace('./finish.html');
+                }else{ // 최종라운드가 아닐 경우 다음라운드로 이동
+                    window.localStorage.setItem('round', roundN/2);
+                    window.location.reload();
+                }
+                return;
+            }
+
+            people1.innerHTML = list[num].name;
+            people2.innerHTML = list[num+1].name;
+            roundChk = roundChk-2;
+            console.log('dataHistoryTree', dataHistoryTree)
+        }
+
+        // 첫페이지로 이동 (저장된 데이터 삭제)
+        function onHome(){
+            location.replace('./index.html');
+        }
+
+        // 이전 페이지로 이동 (저장된 데이터 유지)
+        function onBack(){
+        }
     </script>
 </body>
 </html>

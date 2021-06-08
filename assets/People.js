@@ -9,7 +9,6 @@ var DATA = [
     { "name": "H", "imgUrl": ""},
     { "name": "I", "imgUrl": ""},
     { "name": "J", "imgUrl": ""},
-
     { "name": "K", "imgUrl": ""},
     { "name": "L", "imgUrl": ""},
     { "name": "M", "imgUrl": ""},

@@ -57,14 +57,13 @@
                 <button onClick="onPage(8)">8강</button>
                 <button onClick="onPage(4)">4강</button>
             </dd>
-            <!-- <dd><button onClick="onPage(8)">8강</button></dd> -->
         </dl>
         <footer>https://github.com/yoonovo/ideal-tourament</footer>
     </div>
     <script>      
+        window.localStorage.clear();
         function onPage(value) {
-            console.log('value', value)
-            window.localStorage.setItem('value', value);
+            window.localStorage.setItem('round', value);
             // location.href = './tournament.html';
             location.replace('./tournament.html');
         }  
