@@ -12,12 +12,34 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            margin: 0 5%;
+            border-bottom: 1px solid lightgray;
+        }
+        .head-box h2 {
+            flex-basis: 80%;
+        }
+        .head-box h2 span {
+            display: block;
+        }
+        .head-box button {
+            width: 60px;
+            height: 30px;
+            font-size: 14px;
+            font-weight: 400;
+            margin-bottom: 10px;
+            border: 1px solid lightgray;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .head-box .home-btn {
+            border: 1px solid #000;
+            background-color: #000;
+            color: #fff;
         }
         .contents-box {
             height: 90%;
             display: flex;
             list-style: none;
-            /* background-color: blue; */
         }
         .contents-box .image-box {
             display: flex;
@@ -87,13 +109,13 @@
     <div class="main-box">
         <header class="head-box">
             <!-- 이상형 토너먼트 -->
-            <button class="" onclick="onHome()">HOME</button>
-            <h2>ㅇㅅㅎ ㅌㄴㅁㅌ <span id="roundNumber"></span></h2>
-            <button class="" onclick="onBack()">BACK</button>
+            <button class="home-btn" onclick="onHome()">HOME</button>
+            <h2>이상형 토너먼트 <span id="roundNumber"></span></h2>
+            <button class="back-btn" onclick="onBack()">BACK</button>
         </header>
         <ul class="contents-box">
             <li class="image-box" onClick="selectIdealPeople(1)">
-                <img id="imageUrl1" src="./assets/images/sweet.jpg" alt="">
+                <img id="imageUrl1" src="./assets/images/test.jpeg" alt="">
                 <p id="people1"></p>
             </li>
             <li class="vs-box">
@@ -112,59 +134,63 @@
         const imageUrl2 = document.getElementById('imageUrl2');
         const people1 = document.getElementById('people1');
         const people2 = document.getElementById('people2');
+        const roundNumber = document.getElementById('roundNumber');
 
         const roundN = Number(window.localStorage.getItem('round'));
-        document.getElementById('roundNumber').innerHTML = roundN+'강';
         let roundChk = roundN/2;
 
         // localStorage에 있는 이전기록 데이터 가져오기
-        const storage = window.localStorage.getItem('history');
-        const dataHistoryTree = storage ? JSON.parse(storage) : {}; 
-        console.log('storage', storage)
-        console.log('dataHistoryTree', dataHistoryTree)
-        
-        dataHistoryTree[roundN+'강'] = [];
-        console.log('roundN', roundN)
-        const peopleData = dataHistoryTree[(roundN*2)+'강'] || DATA; // 더미 데이터
-        console.log('peopleData', peopleData)
+        const STORAGE = window.localStorage.getItem('history');
+        let storageData = () => {
+            return STORAGE ? JSON.parse(STORAGE) : {};
+        }; 
+        let curRoundHistory = [];
+
+        const peopleData = storageData()[(roundN*2)+'강'] || DATA; // 더미 데이터
         
         // 가져온 데이터 혹은 새로운 데이터로 세팅
         const arr = new Array(roundN).fill(null);
-        let list = arr.reduce((tot, el) => { // 데이터 랜덤셔플
+        let randomList = arr.reduce((tot, el) => { // 데이터 랜덤셔플
             let ranN = Math.floor(Math.random()*peopleData.length); 
             tot.push(peopleData[ranN]);
             peopleData.splice(ranN, 1);
             return tot;
         }, []);
-        console.log('결과: ', list);
+        console.log('storageData', storageData())
 
+        // 초기값 세팅
         selectIdealPeople();
         
         // 둘 중 하나를 선택 했을때  
         function selectIdealPeople(idx){
             if(idx){ // 클릭 이벤트로 호출 했을때 히스토리에 추가
-                const txt = document.getElementById('people'+idx).innerText;
-                dataHistoryTree[roundN+'강'].push(txt);
+                const txt = document.getElementById('people'+idx).innerText || '';
+                const img = document.getElementById('imageUrl'+idx).src || '';
+                curRoundHistory.push({name: txt, url: ''});
             }
 
             // 라운드가 종료 되었을때
-            const num = (list.length/2) - roundChk;
-            if(num >= list.length){
-                alert('라운드 종료');
-                window.localStorage.setItem('history', JSON.stringify(dataHistoryTree));
-                if(roundN/2 === 1){ // 최종라운드일 경우 finish.html로 이동
+            const num = (randomList.length/2) - roundChk;
+            roundNumber.innerHTML = `${roundN}강(${num}/${roundN})`;
+            if(num >= randomList.length){
+                alert('다음 라운드로 이동합니다.');
+                let result = STORAGE ? JSON.parse(STORAGE) : {};
+                result[roundN+'강'] = curRoundHistory;
+                window.localStorage.setItem('history', JSON.stringify(result));
+                
+                // 최종라운드일 경우 finish.html로 이동
+                if(roundN/2 === 1){ 
                     location.replace('./finish.html');
-                }else{ // 최종라운드가 아닐 경우 다음라운드로 이동
+                }else{ 
                     window.localStorage.setItem('round', roundN/2);
                     window.location.reload();
                 }
                 return;
             }
 
-            people1.innerHTML = list[num].name;
-            people2.innerHTML = list[num+1].name;
+            people1.innerHTML = randomList[num].name;
+            people2.innerHTML = randomList[num+1].name;
             roundChk = roundChk-2;
-            console.log('dataHistoryTree', dataHistoryTree)
         }
 
         // 첫페이지로 이동 (저장된 데이터 삭제)

@@ -7,15 +7,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./assets/index.css" rel="stylesheet">
     <style>
+        .title-box dt {
+            line-height: normal;
+        }
+        .history-box {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 80%;
+            margin-bottom: 30px;
+        }
+        .history-item {
+            flex-basis: 100%;
+            display: flex;
+            text-align: center;
+        }
+        .history-item h3 {
+            width: 50px;
+            height: 30px;
+            line-height: 30px;
+        }
+        .history-item div {
+            display: flex;
+            flex-basis: 100%;
+            height: 50px;
+        }
+        .history-item div .contents {
+            height: 30px;
+            line-height: 30px;
+            width: 30px;
+            text-align: center;
+            background-color: #000;
+            color: #fff;
+            border: 1px solid #fff;
+        }
+        .history-item div .contents.victor {
+            background-color: red;
+        }
     </style>
 </head>
 <body>
     <div class="main-box">
         <dl class="title-box">
-            <dt>토너먼트가 종료되었습니다.</dt>
-            <dd>최종 우승자</dd>
-            <dd>HISTORY
-                <ul id="historyBox">
+            <dt>토너먼트가<br />종료되었습니다.</dt>
+            <dd>
+                <ul id="historyBox" class="history-box">
                 </ul>
             </dd>
             <dd>
@@ -27,10 +65,14 @@
     <script>    
         const dataHistoryTree = window.localStorage.getItem('history') ? JSON.parse(window.localStorage.getItem('history')) : {}; // 히스토리
         console.log('dataHistoryTree', dataHistoryTree)
-        const keys = Object.keys(dataHistoryTree);
+        const keys = (Object.keys(dataHistoryTree)).reverse();
         const historyBox = document.getElementById('historyBox');
         keys.forEach(el => {
-            historyBox.innerHTML += `<li>${dataHistoryTree[el]}</li>`;
+            const result = dataHistoryTree[el].reduce((tot, val) => {
+                tot += el === '2강' ? `<span class="contents victor">${val.name}</span>` : `<span class="contents">${val.name}</span>`;
+                return tot;
+            }, '');
+            historyBox.innerHTML += `<li class="history-item"><h3>${el}</h3><div>${result}</div></li>`;
         })
     </script>
 </body>
