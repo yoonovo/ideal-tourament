@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./assets/index.css" rel="stylesheet">
     <style>
+        /* Title */
         .head-box {
             height: 10%;
             text-align: center;
@@ -36,6 +37,7 @@
             background-color: #000;
             color: #fff;
         }
+        /* Contents */
         .contents-box {
             height: 90%;
             display: flex;
@@ -67,6 +69,7 @@
         .contents-box .vs-box {
             display: none;
         }
+        /* Mobile version */
         @media screen and (max-width: 500px) {
             .contents-box {
                 flex-direction: column;
@@ -108,7 +111,6 @@
 <body>
     <div class="main-box">
         <header class="head-box">
-            <!-- 이상형 토너먼트 -->
             <button class="home-btn" onclick="onHome()">HOME</button>
             <h2>이상형 토너먼트 <span id="roundNumber"></span></h2>
             <button class="back-btn" onclick="onBack()">BACK</button>
@@ -139,12 +141,16 @@
         const roundN = Number(window.localStorage.getItem('round'));
         let roundChk = roundN/2;
 
-        // localStorage에 있는 이전기록 데이터 가져오기
-        const STORAGE = window.localStorage.getItem('history');
+        const STORAGE = window.localStorage.getItem('history'); // localStorage에 있는 이전기록 데이터 가져오기
+        const STORAGE2 = window.localStorage.getItem('history2');
         let storageData = () => {
             return STORAGE ? JSON.parse(STORAGE) : {};
         }; 
-        let curRoundHistory = [];
+        let storageData2 = () => {
+            return STORAGE2 ? JSON.parse(STORAGE2) : {};
+        }; 
+        let history = [];
+        let curRoundHistory = []; // 현재 라운드 데이터
 
         const peopleData = storageData()[(roundN*2)+'강'] || DATA; // 더미 데이터
         
@@ -163,16 +169,24 @@
         
         // 둘 중 하나를 선택 했을때  
         function selectIdealPeople(idx){
+            const num = (randomList.length/2) - roundChk;
+
             if(idx){ // 클릭 이벤트로 호출 했을때 히스토리에 추가
+                console.log('num', num)
+                history[num-2]['result'] = idx-1;
                 const txt = document.getElementById('people'+idx).innerText || '';
                 const img = document.getElementById('imageUrl'+idx).src || '';
                 curRoundHistory.push({name: txt, url: ''});
             }
 
             // 라운드가 종료 되었을때
-            const num = (randomList.length/2) - roundChk;
             roundNumber.innerHTML = `${roundN}강(${num}/${roundN})`;
             if(num >= randomList.length){
+                console.log('history2', history)
+                let result2 = STORAGE2 ? JSON.parse(STORAGE2) : {};
+                result2[roundN+'강'] = history;
+                window.localStorage.setItem('history2', JSON.stringify(result2));
+
                 alert('다음 라운드로 이동합니다.');
                 let result = STORAGE ? JSON.parse(STORAGE) : {};
                 result[roundN+'강'] = curRoundHistory;
@@ -188,9 +202,15 @@
                 return;
             }
 
+            history[num] = {
+                items: [ randomList[num], randomList[num+1] ],
+                result: null
+            }
             people1.innerHTML = randomList[num].name;
             people2.innerHTML = randomList[num+1].name;
             roundChk = roundChk-2;
+            console.log('num', num)
+            console.log('history1', history)
         }
 
         // 첫페이지로 이동 (저장된 데이터 삭제)
