@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="utf-8">
-    <title>TEST</title>
+    <title>이상형 토너먼트</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./assets/index.css" rel="stylesheet">
     <style>
@@ -76,12 +76,14 @@
             }
             .contents-box .image-box img {
                 max-height: 200px;
-                max-width: 300px;
+                max-width: 300px;    
+                border: 1px solid #000;
             }
             .contents-box .image-box p {
                 width: 300px;
                 height: 30px;
                 line-height: 30px;
+                border: 1px solid #000;
             }
             .contents-box .vs-box {
                 display: block;
@@ -112,7 +114,7 @@
     <div class="main-box">
         <header class="head-box">
             <button class="home-btn" onclick="onHome()">HOME</button>
-            <h2>이상형 토너먼트 <span id="roundNumber"></span></h2>
+            <h2>이상형 토너먼트<span id="roundNumber"></span></h2>
             <button class="back-btn" onclick="onBack()">BACK</button>
         </header>
         <ul class="contents-box">
@@ -138,7 +140,7 @@
         const people2 = document.getElementById('people2');
         const roundNumber = document.getElementById('roundNumber');
         const roundN = Number(window.localStorage.getItem('round')); // 2강, 4강, 8강, 16강
-        let roundChk = 0; //roundN/2;
+        let roundChk = 0;
 
         const storageData = { // 이전 라운드 데이터
             value: window.localStorage.getItem('data'), 
@@ -172,11 +174,10 @@
         function selectIdealPeople(idx){
             // 클릭 이벤트로 호출 했을때 히스토리에 추가
             if(idx){
-                console.log('roundChk', roundChk)
                 curHistory[roundChk-2]['result'] = idx-1;
                 const txt = document.getElementById('people'+idx).innerText || '';
                 const img = document.getElementById('imageUrl'+idx).src || '';
-                curData.push({name: txt, url: ''});
+                curData.push({name: txt, url: img});
             }
 
             // 라운드가 종료 되었을때
@@ -207,6 +208,8 @@
             }
             people1.innerHTML = randomList[roundChk].name;
             people2.innerHTML = randomList[roundChk+1].name;
+            imageUrl1.src = randomList[roundChk].url || './assets/images/noImage.png';
+            imageUrl2.src = randomList[roundChk+1].url || './assets/images/noImage.png';
             roundChk = roundChk+2;
             roundNumber.innerHTML = `${roundN}강(${roundChk}/${roundN})`;
         }
@@ -218,14 +221,18 @@
 
         // 이전 페이지로 이동 (저장된 데이터 유지)
         function onBack(){
-            if(roundChk === 2){
+            if(roundChk <= 2){
                 alert('첫번째 입니다.')
                 return;
             }
+            console.log('roundChk', roundChk)
             roundChk = roundChk-2;
+            console.log('roundChk', roundChk)
             roundNumber.innerHTML = `${roundN}강(${roundChk}/${roundN})`;
             people1.innerHTML = randomList[roundChk].name;
             people2.innerHTML = randomList[roundChk+1].name;
+            imageUrl1.src = randomList[roundChk].url || './assets/images/noImage.png';
+            imageUrl2.src = randomList[roundChk+1].url || './assets/images/noImage.png';
         }
     </script>
 </body>
