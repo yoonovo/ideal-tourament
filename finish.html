@@ -7,10 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./assets/index.css" rel="stylesheet">
     <style>
-        .title-box dt {
-            line-height: normal;
+        .final-box {
+            width: 100%;
+            margin-top: 30px;
         }
-        .title-box dt p{
+        .final-box .title-box dt p {
             font-size: 18px;
             color: blue;
         }
@@ -41,6 +42,7 @@
         .history-item .item-box .contents-box .contents {
             width: 15px;
             text-align: center;
+            font-size: 12px;
         }
         .history-item .item-box .contents-box .contents.winner {
             background-color: blue;
@@ -49,10 +51,9 @@
     </style>
 </head>
 <body>
-    <div class="main-box">
+    <div class="final-box">
         <dl class="title-box">
             <dt>토너먼트가<br />종료되었습니다.<br /><p>최종 우승자: <span id="finalWinner"></span></p></dt>
-            <!-- <dt>최종 우승자: <span id="finalWinner"></span></dt> -->
             <dd>
                 <ul id="historyBox" class="history-box">
                 </ul>
@@ -61,7 +62,6 @@
                 <button onclick="location.replace('./index.html')">HOME</button>
             </dd>
         </dl>
-        <footer>https://github.com/yoonovo/ideal-tourament</footer>
     </div>
     <script>    
         const historyBox = document.getElementById('historyBox');
