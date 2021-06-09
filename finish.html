@@ -10,69 +10,81 @@
         .title-box dt {
             line-height: normal;
         }
+        .title-box dt p{
+            font-size: 18px;
+            color: blue;
+        }
         .history-box {
             list-style: none;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            width: 80%;
             margin-bottom: 30px;
         }
         .history-item {
-            flex-basis: 100%;
             display: flex;
             text-align: center;
+            margin-bottom: 10px;
         }
-        .history-item h3 {
-            width: 50px;
-            height: 30px;
-            line-height: 30px;
-        }
-        .history-item div {
+        .history-item .item-box {
             display: flex;
             flex-basis: 100%;
-            height: 50px;
         }
-        .history-item div .contents {
-            height: 30px;
-            line-height: 30px;
-            width: 30px;
+        .history-item .item-box .contents-box {
+            border: 1px solid #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 5px;
+        }
+        .history-item .item-box .contents-box .contents {
+            width: 15px;
             text-align: center;
-            background-color: #000;
+        }
+        .history-item .item-box .contents-box .contents.winner {
+            background-color: blue;
             color: #fff;
-            border: 1px solid #fff;
-        }
-        .history-item div .contents.victor {
-            background-color: red;
         }
     </style>
 </head>
 <body>
     <div class="main-box">
         <dl class="title-box">
-            <dt>토너먼트가<br />종료되었습니다.</dt>
+            <dt>토너먼트가<br />종료되었습니다.<br /><p>최종 우승자: <span id="finalWinner"></span></p></dt>
+            <!-- <dt>최종 우승자: <span id="finalWinner"></span></dt> -->
             <dd>
                 <ul id="historyBox" class="history-box">
                 </ul>
             </dd>
             <dd>
-                <button onClick="location.replace('./index.html')">HOME</button>
+                <button onclick="location.replace('./index.html')">HOME</button>
             </dd>
         </dl>
         <footer>https://github.com/yoonovo/ideal-tourament</footer>
     </div>
     <script>    
-        const dataHistoryTree = window.localStorage.getItem('history') ? JSON.parse(window.localStorage.getItem('history')) : {}; // 히스토리
-        console.log('dataHistoryTree', dataHistoryTree)
-        const keys = (Object.keys(dataHistoryTree)).reverse();
         const historyBox = document.getElementById('historyBox');
+        const dataHistoryTree = window.localStorage.getItem('history') ? JSON.parse(window.localStorage.getItem('history')) : {};
+        const keys = (Object.keys(dataHistoryTree)).reverse(); // 2강, 4강, 8강, 16강
+
+        // 최종우승자
+        const finalRound = dataHistoryTree['2강'][0];
+        const finalWinner = finalRound.items[finalRound.result].name;
+        document.getElementById('finalWinner').innerHTML = finalWinner;
+
+        // 트리형식의 히스토리 만들기
+        historyBox.innerHTML += `<li class="history-item"><div class="item-box"><div class="contents-box"><span class="contents winner">${finalWinner}</span></div></div></li>`;
         keys.forEach(el => {
             const result = dataHistoryTree[el].reduce((tot, val) => {
-                tot += el === '2강' ? `<span class="contents victor">${val.name}</span>` : `<span class="contents">${val.name}</span>`;
+                if(val){
+                    tot += val.result === 0 
+                    ? `<div class="contents-box"><span class="contents winner">${val.items[0].name}</span><span class="contents">${val.items[1].name}</span></div>`
+                    : `<div class="contents-box"><span class="contents">${val.items[0].name}</span><span class="contents winner">${val.items[1].name}</span></div>`;
+                }
                 return tot;
             }, '');
-            historyBox.innerHTML += `<li class="history-item"><h3>${el}</h3><div>${result}</div></li>`;
+            historyBox.innerHTML += `<li class="history-item"><div class="item-box">${result}</div></li>`;
         })
     </script>
 </body>

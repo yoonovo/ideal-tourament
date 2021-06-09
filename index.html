@@ -53,9 +53,9 @@
         <dl class="title-box">
             <dt>이상형 토너먼트</dt>
             <dd>
-                <button onClick="onPage(16)">16강</button>
-                <button onClick="onPage(8)">8강</button>
-                <button onClick="onPage(4)">4강</button>
+                <button onclick="onPage(16)">16강</button>
+                <button onclick="onPage(8)">8강</button>
+                <button onclick="onPage(4)">4강</button>
             </dd>
         </dl>
         <footer>https://github.com/yoonovo/ideal-tourament</footer>
@@ -64,7 +64,6 @@
         window.localStorage.clear();
         function onPage(value) {
             window.localStorage.setItem('round', value);
-            // location.href = './tournament.html';
             location.replace('./tournament.html');
         }  
     </script>

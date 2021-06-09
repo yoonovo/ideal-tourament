@@ -116,7 +116,7 @@
             <button class="back-btn" onclick="onBack()">BACK</button>
         </header>
         <ul class="contents-box">
-            <li class="image-box" onClick="selectIdealPeople(1)">
+            <li class="image-box" onclick="selectIdealPeople(1)">
                 <img id="imageUrl1" src="./assets/images/test.jpeg" alt="">
                 <p id="people1"></p>
             </li>
@@ -124,7 +124,7 @@
                 <hr />
                 <p>VS</p>
             </li>
-            <li class="image-box" onClick="selectIdealPeople(2)">
+            <li class="image-box" onclick="selectIdealPeople(2)">
                 <img id="imageUrl2" src="./assets/images/sweet.jpg" alt="">
                 <p id="people2"></p>
             </li>
@@ -137,24 +137,26 @@
         const people1 = document.getElementById('people1');
         const people2 = document.getElementById('people2');
         const roundNumber = document.getElementById('roundNumber');
+        const roundN = Number(window.localStorage.getItem('round')); // 2강, 4강, 8강, 16강
+        let roundChk = 0; //roundN/2;
 
-        const roundN = Number(window.localStorage.getItem('round'));
-        let roundChk = roundN/2;
+        const storageData = { // 이전 라운드 데이터
+            value: window.localStorage.getItem('data'), 
+            get parse() {
+                return this.value ? JSON.parse(this.value) : {};
+            }
+        }
+        const storageHistory = { // 이전 라운드 히스토리
+            value: window.localStorage.getItem('history'),
+            get parse() {
+                return this.value ? JSON.parse(this.value) : {};
+            }
+        }
+        let curData = []; // 현재 라운드 데이터
+        let curHistory = []; // 현제 라운드 히스토리
 
-        const STORAGE = window.localStorage.getItem('history'); // localStorage에 있는 이전기록 데이터 가져오기
-        const STORAGE2 = window.localStorage.getItem('history2');
-        let storageData = () => {
-            return STORAGE ? JSON.parse(STORAGE) : {};
-        }; 
-        let storageData2 = () => {
-            return STORAGE2 ? JSON.parse(STORAGE2) : {};
-        }; 
-        let history = [];
-        let curRoundHistory = []; // 현재 라운드 데이터
-
-        const peopleData = storageData()[(roundN*2)+'강'] || DATA; // 더미 데이터
-        
-        // 가져온 데이터 혹은 새로운 데이터로 세팅
+        // 이전 라운드 데이터가 없을 경우 더미 데이터로 세팅
+        const peopleData = storageData.parse[(roundN*2)+'강'] || DATA;
         const arr = new Array(roundN).fill(null);
         let randomList = arr.reduce((tot, el) => { // 데이터 랜덤셔플
             let ranN = Math.floor(Math.random()*peopleData.length); 
@@ -162,35 +164,32 @@
             peopleData.splice(ranN, 1);
             return tot;
         }, []);
-        console.log('storageData', storageData())
 
         // 초기값 세팅
         selectIdealPeople();
         
         // 둘 중 하나를 선택 했을때  
         function selectIdealPeople(idx){
-            const num = (randomList.length/2) - roundChk;
-
-            if(idx){ // 클릭 이벤트로 호출 했을때 히스토리에 추가
-                console.log('num', num)
-                history[num-2]['result'] = idx-1;
+            // 클릭 이벤트로 호출 했을때 히스토리에 추가
+            if(idx){
+                console.log('roundChk', roundChk)
+                curHistory[roundChk-2]['result'] = idx-1;
                 const txt = document.getElementById('people'+idx).innerText || '';
                 const img = document.getElementById('imageUrl'+idx).src || '';
-                curRoundHistory.push({name: txt, url: ''});
+                curData.push({name: txt, url: ''});
             }
 
             // 라운드가 종료 되었을때
-            roundNumber.innerHTML = `${roundN}강(${num}/${roundN})`;
-            if(num >= randomList.length){
-                console.log('history2', history)
-                let result2 = STORAGE2 ? JSON.parse(STORAGE2) : {};
-                result2[roundN+'강'] = history;
-                window.localStorage.setItem('history2', JSON.stringify(result2));
-
+            if(roundChk === randomList.length){
                 alert('다음 라운드로 이동합니다.');
-                let result = STORAGE ? JSON.parse(STORAGE) : {};
-                result[roundN+'강'] = curRoundHistory;
-                window.localStorage.setItem('history', JSON.stringify(result));
+
+                // 결과값 저장
+                let resultHistory = storageHistory.parse;
+                resultHistory[roundN+'강'] = curHistory;
+                window.localStorage.setItem('history', JSON.stringify(resultHistory));
+                let resultData = storageData.parse;
+                resultData[roundN+'강'] = curData;
+                window.localStorage.setItem('data', JSON.stringify(resultData));
                 
                 // 최종라운드일 경우 finish.html로 이동
                 if(roundN/2 === 1){ 
@@ -202,15 +201,14 @@
                 return;
             }
 
-            history[num] = {
-                items: [ randomList[num], randomList[num+1] ],
+            curHistory[roundChk] = {
+                items: [ randomList[roundChk], randomList[roundChk+1] ],
                 result: null
             }
-            people1.innerHTML = randomList[num].name;
-            people2.innerHTML = randomList[num+1].name;
-            roundChk = roundChk-2;
-            console.log('num', num)
-            console.log('history1', history)
+            people1.innerHTML = randomList[roundChk].name;
+            people2.innerHTML = randomList[roundChk+1].name;
+            roundChk = roundChk+2;
+            roundNumber.innerHTML = `${roundN}강(${roundChk}/${roundN})`;
         }
 
         // 첫페이지로 이동 (저장된 데이터 삭제)
@@ -220,6 +218,14 @@
 
         // 이전 페이지로 이동 (저장된 데이터 유지)
         function onBack(){
+            if(roundChk === 2){
+                alert('첫번째 입니다.')
+                return;
+            }
+            roundChk = roundChk-2;
+            roundNumber.innerHTML = `${roundN}강(${roundChk}/${roundN})`;
+            people1.innerHTML = randomList[roundChk].name;
+            people2.innerHTML = randomList[roundChk+1].name;
         }
     </script>
 </body>
