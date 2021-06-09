@@ -154,7 +154,6 @@
                 return this.value ? JSON.parse(this.value) : {};
             }
         }
-        let curData = []; // 현재 라운드 데이터
         let curHistory = []; // 현제 라운드 히스토리
 
         // 이전 라운드 데이터가 없을 경우 더미 데이터로 세팅
@@ -179,9 +178,6 @@
             // 클릭 이벤트로 호출 했을때 히스토리에 추가
             if(idx){
                 curHistory[roundChk-2]['result'] = idx-1;
-                const txt = document.getElementById('people'+idx).innerText || '';
-                const img = document.getElementById('imageUrl'+idx).src || '';
-                curData.push({name: txt, url: img});
             }
 
             // 라운드가 종료 되었을때
@@ -193,7 +189,12 @@
                 resultHistory[roundN+'강'] = curHistory;
                 window.localStorage.setItem('history', JSON.stringify(resultHistory));
                 let resultData = storageData.parse;
-                resultData[roundN+'강'] = curData;
+                resultData[roundN+'강'] = curHistory.reduce((tot, val) => {
+                    if(val){
+                        tot.push(val.items[val.result]);
+                    }
+                    return tot;
+                }, []);
                 window.localStorage.setItem('data', JSON.stringify(resultData));
                 
                 // 최종라운드일 경우 finish.html로 이동
@@ -229,9 +230,7 @@
                 alert('첫번째 입니다.');
                 return;
             }
-            console.log('roundChk', roundChk)
             roundChk = roundChk-2;
-            console.log('roundChk', roundChk)
             roundNumber.innerHTML = `${roundN}강(${roundChk}/${roundN})`;
             people1.innerHTML = randomList[roundChk-2].name;
             people2.innerHTML = randomList[roundChk-1].name;
