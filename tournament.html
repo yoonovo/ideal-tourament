@@ -222,17 +222,17 @@
         // 이전 페이지로 이동 (저장된 데이터 유지)
         function onBack(){
             if(roundChk <= 2){
-                alert('첫번째 입니다.')
+                alert('첫번째 입니다.');
                 return;
             }
             console.log('roundChk', roundChk)
             roundChk = roundChk-2;
             console.log('roundChk', roundChk)
             roundNumber.innerHTML = `${roundN}강(${roundChk}/${roundN})`;
-            people1.innerHTML = randomList[roundChk].name;
-            people2.innerHTML = randomList[roundChk+1].name;
-            imageUrl1.src = randomList[roundChk].url || './assets/images/noImage.png';
-            imageUrl2.src = randomList[roundChk+1].url || './assets/images/noImage.png';
+            people1.innerHTML = randomList[roundChk-2].name;
+            people2.innerHTML = randomList[roundChk-1].name;
+            imageUrl1.src = randomList[roundChk-2].url || './assets/images/noImage.png';
+            imageUrl2.src = randomList[roundChk-1].url || './assets/images/noImage.png';
         }
     </script>
 </body>
