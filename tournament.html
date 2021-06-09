@@ -158,14 +158,18 @@
         let curHistory = []; // 현제 라운드 히스토리
 
         // 이전 라운드 데이터가 없을 경우 더미 데이터로 세팅
-        const peopleData = storageData.parse[(roundN*2)+'강'] || DATA;
-        const arr = new Array(roundN).fill(null);
-        let randomList = arr.reduce((tot, el) => { // 데이터 랜덤셔플
-            let ranN = Math.floor(Math.random()*peopleData.length); 
-            tot.push(peopleData[ranN]);
-            peopleData.splice(ranN, 1);
-            return tot;
-        }, []);
+        let randomList = [];
+        if(!storageData.parse[(roundN*2)+'강']){
+            const arr = new Array(roundN).fill(null);
+            randomList = arr.reduce((tot, el) => { // 데이터 랜덤셔플
+                let ranN = Math.floor(Math.random()*DATA.length); 
+                tot.push(DATA[ranN]);
+                DATA.splice(ranN, 1);
+                return tot;
+            }, []);
+        }else{
+            randomList = storageData.parse[(roundN*2)+'강'];
+        }
 
         // 초기값 세팅
         selectIdealPeople();
