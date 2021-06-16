@@ -28,7 +28,7 @@ body {
     align-items: center;
     justify-content: center;
 }
-.title-box button {
+.title-box .btn {
     width: 150px;
     height: 50px;
     font-size: 20px;
@@ -37,6 +37,26 @@ body {
     border: 1px solid lightgray;
     border-radius: 5px;
     cursor: pointer;
+}
+.title-box .btn:last-child {
+    margin-bottom: 0;
+}
+.title-box .sub-btn {
+    width: 50px;
+    height: 30px;
+    font-size: 14px;
+    font-weight: 400;
+    margin-right: 2px;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.title-box .sub-btn:focus {
+    background-color: #000;
+    color: #fff;
+}
+.title-box .sub-btn:last-child {
+    margin-right: 0;
 }
 footer {
     display: block;
